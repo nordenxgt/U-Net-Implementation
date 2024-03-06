@@ -5,7 +5,7 @@ from torchvision.transforms.functional import center_crop
 class Conv(nn.Module):
     def __init__(self, in_channels: int, out_channels: int) -> None:
         super().__init__()
-        self.unet_conv = nn.Sequential(
+        self.conv = nn.Sequential(
             nn.Conv2d(in_channels, out_channels, 3, 1),
             nn.ReLU(),
             nn.Conv2d(out_channels, out_channels, 3, 1),
@@ -13,7 +13,7 @@ class Conv(nn.Module):
         )
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
-        return self.unet_conv(x)
+        return self.conv(x)
 
 class Down(nn.Module):
     def __init__(self, in_channels: int, out_channels: int) -> None:
@@ -29,14 +29,12 @@ class Down(nn.Module):
 class Up(nn.Module):
     def __init__(self, in_channels: int, out_channels: int) -> None:
         super().__init__()
-        self.up = nn.ConvTranspose2d(2, 2),
+        self.up = nn.ConvTranspose2d(in_channels, out_channels, 2, 2)
         self.up_sample = Conv(in_channels, out_channels)
     
     def forward(self, x_contract: torch.Tensor, x: torch.Tensor) -> torch.Tensor:
-        x = torch.cat([
-            center_crop(x_contract, [x.shape[2], x.shape[3]]), 
-            self.up(x)
-        ], dim=1)
+        x = self.up(x)
+        x = torch.cat([center_crop(x_contract, [x.shape[2], x.shape[3]]), x], dim=1)
         return self.up_sample(x)
         
 class UNet(nn.Module):
@@ -64,10 +62,10 @@ class UNet(nn.Module):
 
         x5 = self.bottleneck(x4)
         
-        x6 = self.up2(x4, x5)
-        x7 = self.up3(x3, x6)
-        x8 = self.up4(x2, x7)
-        x9 = self.up1(x1, x8)
+        x6 = self.up1(x4, x5)
+        x7 = self.up2(x3, x6)
+        x8 = self.up3(x2, x7)
+        x9 = self.up4(x1, x8)
 
         x = self.out_conv(x9)
 
