@@ -30,12 +30,12 @@ class Up(nn.Module):
     def __init__(self, in_channels: int, out_channels: int) -> None:
         super().__init__()
         self.up = nn.ConvTranspose2d(in_channels, out_channels, 2, 2)
-        self.up_sample = Conv(in_channels, out_channels)
+        self.conv = Conv(in_channels, out_channels)
     
     def forward(self, x_contract: torch.Tensor, x: torch.Tensor) -> torch.Tensor:
         x = self.up(x)
         x = torch.cat([center_crop(x_contract, [x.shape[2], x.shape[3]]), x], dim=1)
-        return self.up_sample(x)
+        return self.conv(x)
         
 class UNet(nn.Module):
     def __init__(self) -> None:
