@@ -8,7 +8,7 @@ from tqdm import tqdm
 
 from model import UNet
 from dataloader import dataloader
-from utils import plot_loss_accuracy, calculate_accuracy
+from utils import plot_loss_accuracy
 
 def main(epochs: int):
     model = UNet()
@@ -20,8 +20,7 @@ def main(epochs: int):
 
     train_dataloader, test_dataloader = dataloader()
 
-    train_losses, train_accuracies = [], []
-    test_losses, test_accuracies = [], []
+    train_losses, test_losses, = [], []
 
     model.to(device)
     
@@ -33,7 +32,6 @@ def main(epochs: int):
             y_pred = model(X)
             loss = loss_fn(y_pred, y)
             train_loss += loss.item()
-            train_acc += calculate_accuracy(F.softmax(y_pred, dim=1), y)
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
@@ -46,7 +44,6 @@ def main(epochs: int):
                     X, y = X.to(device), y.to(device)
                     y_pred = model(X)
                     loss = loss_fn(y_pred, y)
-                    test_acc += calculate_accuracy(F.softmax(y_pred, dim=1), y)
                     test_loss += loss.item()
             
             train_loss /= len(train_dataloader)
@@ -56,12 +53,10 @@ def main(epochs: int):
 
             train_losses.append(train_loss)
             test_losses.append(test_loss)
-            train_accuracies.append(train_acc)
-            test_accuracies.append(test_acc)
             
             print(f"Epoch: {epoch} | Train Loss: {train_loss:.2f} Train Accuracy: {train_acc*100:.2f} | Test Loss: {test_loss:.2f} Test Accuracy: {test_acc*100:.2f}")
     
-    plot_loss_accuracy(train_losses, test_losses, train_accuracies, test_accuracies, save=True)
+    plot_loss_accuracy(train_losses, test_losses, save=True)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Train Script")
