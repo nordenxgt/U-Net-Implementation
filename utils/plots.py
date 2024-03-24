@@ -23,6 +23,6 @@ def plot_loss_accuracy(
     
     if save:
         if not os.path.exists("results"): os.makedirs("results")
-        plt.savefig(f"results/AlexNet.png")
+        plt.savefig(f"results/UNet.png")
     
     plt.show()
