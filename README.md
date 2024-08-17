@@ -31,3 +31,17 @@ Before running the script, place your data directory location for both train and
 ```sh
 python train.py --epochs 100
 ```
+
+## Citation
+
+```
+@misc{ronneberger2015unetconvolutionalnetworksbiomedical,
+      title={U-Net: Convolutional Networks for Biomedical Image Segmentation}, 
+      author={Olaf Ronneberger and Philipp Fischer and Thomas Brox},
+      year={2015},
+      eprint={1505.04597},
+      archivePrefix={arXiv},
+      primaryClass={cs.CV},
+      url={https://arxiv.org/abs/1505.04597}, 
+}
+```
